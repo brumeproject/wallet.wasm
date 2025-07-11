@@ -1,4 +1,4 @@
-FROM rust:1.80.1
+FROM rust:1.87.0
 
 WORKDIR /app
 
@@ -7,10 +7,10 @@ RUN apt install -y rsync
 
 RUN cargo install wasm-pack
 
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 
 ENV NVM_DIR=/root/.nvm
-ENV NODE_VERSION=22.6.0
+ENV NODE_VERSION=22.16.0
 
 RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
 RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}

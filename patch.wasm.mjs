@@ -32,8 +32,8 @@ const beforeMemoryJs = `export class Memory {
         wasm.__wbg_memory_free(ptr, 0);
     }
     /**
-    * @param {Uint8Array} inner
-    */
+     * @param {Uint8Array} inner
+     */
     constructor(inner) {
         const ptr0 = passArray8ToWasm0(inner, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
@@ -43,15 +43,15 @@ const beforeMemoryJs = `export class Memory {
         return this;
     }
     /**
-    * @returns {number}
-    */
+     * @returns {number}
+     */
     ptr() {
         const ret = wasm.memory_ptr(this.__wbg_ptr);
         return ret >>> 0;
     }
     /**
-    * @returns {number}
-    */
+     * @returns {number}
+     */
     len() {
         const ret = wasm.memory_len(this.__wbg_ptr);
         return ret >>> 0;
@@ -72,8 +72,8 @@ const beforeMemoryJs2 = `export class Memory {
         wasm.__wbg_memory_free(ptr, 0);
     }
     /**
-    * @param {Uint8Array} inner
-    */
+     * @param {Uint8Array} inner
+     */
     constructor(inner) {
         const ptr0 = passArray8ToWasm0(inner, wasm.__wbindgen_malloc);
         const len0 = WASM_VECTOR_LEN;
@@ -83,15 +83,15 @@ const beforeMemoryJs2 = `export class Memory {
         return this;
     }
     /**
-    * @returns {number}
-    */
+     * @returns {number}
+     */
     ptr() {
         const ret = wasm.memory_ptr(this.__wbg_ptr);
         return ret >>> 0;
     }
     /**
-    * @returns {number}
-    */
+     * @returns {number}
+     */
     len() {
         const ret = wasm.memory_len(this.__wbg_ptr);
         return ret >>> 0;
@@ -232,17 +232,8 @@ const afterMemoryJs2 = `export class Memory {
 
 const beforeMemoryTs = `export class Memory {
   free(): void;
-/**
-* @param {Uint8Array} inner
-*/
   constructor(inner: Uint8Array);
-/**
-* @returns {number}
-*/
   ptr(): number;
-/**
-* @returns {number}
-*/
   len(): number;
 }`
 

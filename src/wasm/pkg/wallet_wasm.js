@@ -1,5 +1,20 @@
 let wasm;
 
+function addToExternrefTable0(obj) {
+    const idx = wasm.__externref_table_alloc();
+    wasm.__wbindgen_export_2.set(idx, obj);
+    return idx;
+}
+
+function handleError(f, args) {
+    try {
+        return f.apply(this, args);
+    } catch (e) {
+        const idx = addToExternrefTable0(e);
+        wasm.__wbindgen_exn_store(idx);
+    }
+}
+
 const cachedTextDecoder = (typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8', { ignoreBOM: true, fatal: true }) : { decode: () => { throw Error('TextDecoder not available') } } );
 
 if (typeof TextDecoder !== 'undefined') { cachedTextDecoder.decode(); };
@@ -18,35 +33,6 @@ function getStringFromWasm0(ptr, len) {
     return cachedTextDecoder.decode(getUint8ArrayMemory0().subarray(ptr, ptr + len));
 }
 
-const heap = new Array(128).fill(undefined);
-
-heap.push(undefined, null, true, false);
-
-let heap_next = heap.length;
-
-function addHeapObject(obj) {
-    if (heap_next === heap.length) heap.push(heap.length + 1);
-    const idx = heap_next;
-    heap_next = heap[idx];
-
-    heap[idx] = obj;
-    return idx;
-}
-
-function getObject(idx) { return heap[idx]; }
-
-function dropObject(idx) {
-    if (idx < 132) return;
-    heap[idx] = heap_next;
-    heap_next = idx;
-}
-
-function takeObject(idx) {
-    const ret = getObject(idx);
-    dropObject(idx);
-    return ret;
-}
-
 let WASM_VECTOR_LEN = 0;
 
 function passArray8ToWasm0(arg, malloc) {
@@ -56,79 +42,58 @@ function passArray8ToWasm0(arg, malloc) {
     return ptr;
 }
 
-function handleError(f, args) {
-    try {
-        return f.apply(this, args);
-    } catch (e) {
-        wasm.__wbindgen_exn_store(addHeapObject(e));
-    }
-}
-
 function _assertClass(instance, klass) {
     if (!(instance instanceof klass)) {
         throw new Error(`expected instance of ${klass.name}`);
     }
-    return instance.ptr;
-}
-
-let cachedDataViewMemory0 = null;
-
-function getDataViewMemory0() {
-    if (cachedDataViewMemory0 === null || cachedDataViewMemory0.buffer.detached === true || (cachedDataViewMemory0.buffer.detached === undefined && cachedDataViewMemory0.buffer !== wasm.memory.buffer)) {
-        cachedDataViewMemory0 = new DataView(wasm.memory.buffer);
-    }
-    return cachedDataViewMemory0;
 }
 /**
-* @param {Memory} data
-* @returns {Memory}
-*/
+ * @param {Memory} data
+ * @returns {Memory}
+ */
 export function sha1(data) {
     _assertClass(data, Memory);
     const ret = wasm.sha1(data.__wbg_ptr);
     return Memory.__wrap(ret);
 }
 
+function takeFromExternrefTable0(idx) {
+    const value = wasm.__wbindgen_export_2.get(idx);
+    wasm.__externref_table_dealloc(idx);
+    return value;
+}
 /**
-* @param {Memory} bytes
-* @returns {string}
-*/
+ * @param {Memory} bytes
+ * @returns {string}
+ */
 export function base16_encode_lower(bytes) {
     let deferred1_0;
     let deferred1_1;
     try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(bytes, Memory);
-        wasm.base16_encode_lower(retptr, bytes.__wbg_ptr);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        deferred1_0 = r0;
-        deferred1_1 = r1;
-        return getStringFromWasm0(r0, r1);
+        const ret = wasm.base16_encode_lower(bytes.__wbg_ptr);
+        deferred1_0 = ret[0];
+        deferred1_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
         wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
 }
 
 /**
-* @param {Memory} bytes
-* @returns {string}
-*/
+ * @param {Memory} bytes
+ * @returns {string}
+ */
 export function base16_encode_upper(bytes) {
     let deferred1_0;
     let deferred1_1;
     try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(bytes, Memory);
-        wasm.base16_encode_upper(retptr, bytes.__wbg_ptr);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        deferred1_0 = r0;
-        deferred1_1 = r1;
-        return getStringFromWasm0(r0, r1);
+        const ret = wasm.base16_encode_upper(bytes.__wbg_ptr);
+        deferred1_0 = ret[0];
+        deferred1_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
         wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
 }
@@ -187,75 +152,51 @@ function passStringToWasm0(arg, malloc, realloc) {
     return ptr;
 }
 /**
-* @param {string} text
-* @returns {Memory}
-*/
+ * @param {string} text
+ * @returns {Memory}
+ */
 export function base16_decode_mixed(text) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.base16_decode_mixed(retptr, ptr0, len0);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return Memory.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
+    const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.base16_decode_mixed(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
     }
+    return Memory.__wrap(ret[0]);
 }
 
 /**
-* @param {string} text
-* @returns {Memory}
-*/
+ * @param {string} text
+ * @returns {Memory}
+ */
 export function base16_decode_lower(text) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.base16_decode_lower(retptr, ptr0, len0);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return Memory.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
+    const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.base16_decode_lower(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
     }
+    return Memory.__wrap(ret[0]);
 }
 
 /**
-* @param {string} text
-* @returns {Memory}
-*/
+ * @param {string} text
+ * @returns {Memory}
+ */
 export function base16_decode_upper(text) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.base16_decode_upper(retptr, ptr0, len0);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return Memory.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
+    const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.base16_decode_upper(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
     }
+    return Memory.__wrap(ret[0]);
 }
 
 /**
-* @param {Memory} data
-* @returns {Memory}
-*/
+ * @param {Memory} data
+ * @returns {Memory}
+ */
 export function keccak256(data) {
     _assertClass(data, Memory);
     const ret = wasm.keccak256(data.__wbg_ptr);
@@ -263,185 +204,137 @@ export function keccak256(data) {
 }
 
 /**
-* @param {Memory} bytes
-* @returns {string}
-*/
+ * @param {Memory} bytes
+ * @returns {string}
+ */
 export function base64_encode_padded(bytes) {
     let deferred1_0;
     let deferred1_1;
     try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(bytes, Memory);
-        wasm.base64_encode_padded(retptr, bytes.__wbg_ptr);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        deferred1_0 = r0;
-        deferred1_1 = r1;
-        return getStringFromWasm0(r0, r1);
+        const ret = wasm.base64_encode_padded(bytes.__wbg_ptr);
+        deferred1_0 = ret[0];
+        deferred1_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
         wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
 }
 
 /**
-* @param {string} text
-* @returns {Memory}
-*/
+ * @param {string} text
+ * @returns {Memory}
+ */
 export function base64_decode_padded(text) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.base64_decode_padded(retptr, ptr0, len0);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return Memory.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
+    const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.base64_decode_padded(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
     }
+    return Memory.__wrap(ret[0]);
 }
 
 /**
-* @param {Memory} bytes
-* @returns {string}
-*/
+ * @param {Memory} bytes
+ * @returns {string}
+ */
 export function base64_encode_unpadded(bytes) {
     let deferred1_0;
     let deferred1_1;
     try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(bytes, Memory);
-        wasm.base64_encode_unpadded(retptr, bytes.__wbg_ptr);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        deferred1_0 = r0;
-        deferred1_1 = r1;
-        return getStringFromWasm0(r0, r1);
+        const ret = wasm.base64_encode_unpadded(bytes.__wbg_ptr);
+        deferred1_0 = ret[0];
+        deferred1_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
         wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
 }
 
 /**
-* @param {string} text
-* @returns {Memory}
-*/
+ * @param {string} text
+ * @returns {Memory}
+ */
 export function base64_decode_unpadded(text) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.base64_decode_unpadded(retptr, ptr0, len0);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return Memory.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
+    const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.base64_decode_unpadded(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
     }
+    return Memory.__wrap(ret[0]);
 }
 
 /**
-* @param {Memory} bytes
-* @returns {string}
-*/
+ * @param {Memory} bytes
+ * @returns {string}
+ */
 export function base64url_encode_padded(bytes) {
     let deferred1_0;
     let deferred1_1;
     try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(bytes, Memory);
-        wasm.base64url_encode_padded(retptr, bytes.__wbg_ptr);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        deferred1_0 = r0;
-        deferred1_1 = r1;
-        return getStringFromWasm0(r0, r1);
+        const ret = wasm.base64url_encode_padded(bytes.__wbg_ptr);
+        deferred1_0 = ret[0];
+        deferred1_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
         wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
 }
 
 /**
-* @param {string} text
-* @returns {Memory}
-*/
+ * @param {string} text
+ * @returns {Memory}
+ */
 export function base64url_decode_padded(text) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.base64url_decode_padded(retptr, ptr0, len0);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return Memory.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
+    const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.base64url_decode_padded(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
     }
+    return Memory.__wrap(ret[0]);
 }
 
 /**
-* @param {Memory} bytes
-* @returns {string}
-*/
+ * @param {Memory} bytes
+ * @returns {string}
+ */
 export function base64url_encode_unpadded(bytes) {
     let deferred1_0;
     let deferred1_1;
     try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(bytes, Memory);
-        wasm.base64url_encode_unpadded(retptr, bytes.__wbg_ptr);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        deferred1_0 = r0;
-        deferred1_1 = r1;
-        return getStringFromWasm0(r0, r1);
+        const ret = wasm.base64url_encode_unpadded(bytes.__wbg_ptr);
+        deferred1_0 = ret[0];
+        deferred1_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
         wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
 }
 
 /**
-* @param {string} text
-* @returns {Memory}
-*/
+ * @param {string} text
+ * @returns {Memory}
+ */
 export function base64url_decode_unpadded(text) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.base64url_decode_unpadded(retptr, ptr0, len0);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-        if (r2) {
-            throw takeObject(r1);
-        }
-        return Memory.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
+    const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.base64url_decode_unpadded(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
     }
+    return Memory.__wrap(ret[0]);
 }
 
 /**
-* @param {Memory} data
-* @returns {Memory}
-*/
+ * @param {Memory} data
+ * @returns {Memory}
+ */
 export function ripemd160(data) {
     _assertClass(data, Memory);
     const ret = wasm.ripemd160(data.__wbg_ptr);
@@ -449,54 +342,94 @@ export function ripemd160(data) {
 }
 
 /**
-* @param {Memory} bytes
-* @returns {string}
-*/
+ * @param {Memory} bytes
+ * @returns {string}
+ */
 export function base58_encode(bytes) {
     let deferred1_0;
     let deferred1_1;
     try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         _assertClass(bytes, Memory);
-        wasm.base58_encode(retptr, bytes.__wbg_ptr);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        deferred1_0 = r0;
-        deferred1_1 = r1;
-        return getStringFromWasm0(r0, r1);
+        const ret = wasm.base58_encode(bytes.__wbg_ptr);
+        deferred1_0 = ret[0];
+        deferred1_1 = ret[1];
+        return getStringFromWasm0(ret[0], ret[1]);
     } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
         wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
     }
 }
 
 /**
-* @param {string} text
-* @returns {Memory}
-*/
+ * @param {string} text
+ * @returns {Memory}
+ */
 export function base58_decode(text) {
-    try {
-        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-        const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        const len0 = WASM_VECTOR_LEN;
-        wasm.base58_decode(retptr, ptr0, len0);
-        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-        if (r2) {
-            throw takeObject(r1);
+    const ptr0 = passStringToWasm0(text, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.base58_decode(ptr0, len0);
+    if (ret[2]) {
+        throw takeFromExternrefTable0(ret[1]);
+    }
+    return Memory.__wrap(ret[0]);
+}
+
+const ChaCha20CipherFinalization = true
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_chacha20cipher_free(ptr >>> 0, 1));
+
+export class ChaCha20Cipher {
+
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        ChaCha20CipherFinalization;
+        return ptr;
+    }
+
+    [Symbol.dispose]() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_chacha20cipher_free(ptr, 0);
+    }
+    /**
+     * @param {Memory} key
+     * @param {Memory} nonce
+     */
+    constructor(key, nonce) {
+        _assertClass(key, Memory);
+        _assertClass(nonce, Memory);
+        const ret = wasm.chacha20cipher_new(key.__wbg_ptr, nonce.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
-        return Memory.__wrap(r0);
-    } finally {
-        wasm.__wbindgen_add_to_stack_pointer(16);
+        this.__wbg_ptr = ret[0] >>> 0;
+        ChaCha20CipherFinalization;
+        return this;
+    }
+    /**
+     * @param {number} position
+     */
+    seek(position) {
+        const ret = wasm.chacha20cipher_seek(this.__wbg_ptr, position);
+        if (ret[1]) {
+            throw takeFromExternrefTable0(ret[0]);
+        }
+    }
+    /**
+     * @param {Memory} memory
+     */
+    apply_keystream(memory) {
+        _assertClass(memory, Memory);
+        const ret = wasm.chacha20cipher_apply_keystream(this.__wbg_ptr, memory.__wbg_ptr);
+        if (ret[1]) {
+            throw takeFromExternrefTable0(ret[0]);
+        }
     }
 }
 
 const ChaCha20Poly1305CipherFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_chacha20poly1305cipher_free(ptr >>> 0, 1));
-/**
-*/
+
 export class ChaCha20Poly1305Cipher {
 
     __destroy_into_raw() {
@@ -511,77 +444,52 @@ export class ChaCha20Poly1305Cipher {
         wasm.__wbg_chacha20poly1305cipher_free(ptr, 0);
     }
     /**
-    * @param {Memory} key
-    */
+     * @param {Memory} key
+     */
     constructor(key) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(key, Memory);
-            wasm.chacha20poly1305cipher_new(retptr, key.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            this.__wbg_ptr = r0 >>> 0;
-            ChaCha20Poly1305CipherFinalization;
-            return this;
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(key, Memory);
+        const ret = wasm.chacha20poly1305cipher_new(key.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        this.__wbg_ptr = ret[0] >>> 0;
+        ChaCha20Poly1305CipherFinalization;
+        return this;
     }
     /**
-    * @param {Memory} message
-    * @param {Memory} nonce
-    * @returns {Memory}
-    */
+     * @param {Memory} message
+     * @param {Memory} nonce
+     * @returns {Memory}
+     */
     encrypt(message, nonce) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(message, Memory);
-            _assertClass(nonce, Memory);
-            wasm.chacha20poly1305cipher_encrypt(retptr, this.__wbg_ptr, message.__wbg_ptr, nonce.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return Memory.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(message, Memory);
+        _assertClass(nonce, Memory);
+        const ret = wasm.chacha20poly1305cipher_encrypt(this.__wbg_ptr, message.__wbg_ptr, nonce.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return Memory.__wrap(ret[0]);
     }
     /**
-    * @param {Memory} message
-    * @param {Memory} nonce
-    * @returns {Memory}
-    */
+     * @param {Memory} message
+     * @param {Memory} nonce
+     * @returns {Memory}
+     */
     decrypt(message, nonce) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(message, Memory);
-            _assertClass(nonce, Memory);
-            wasm.chacha20poly1305cipher_decrypt(retptr, this.__wbg_ptr, message.__wbg_ptr, nonce.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return Memory.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(message, Memory);
+        _assertClass(nonce, Memory);
+        const ret = wasm.chacha20poly1305cipher_decrypt(this.__wbg_ptr, message.__wbg_ptr, nonce.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return Memory.__wrap(ret[0]);
     }
 }
 
 const Ed25519SignatureFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_ed25519signature_free(ptr >>> 0, 1));
-/**
-*/
+
 export class Ed25519Signature {
 
     static __wrap(ptr) {
@@ -604,63 +512,47 @@ export class Ed25519Signature {
         wasm.__wbg_ed25519signature_free(ptr, 0);
     }
     /**
-    * @param {Memory} bytes
-    */
+     * @param {Memory} bytes
+     */
     constructor(bytes) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(bytes, Memory);
-            wasm.ed25519signature_from_bytes(retptr, bytes.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            this.__wbg_ptr = r0 >>> 0;
-            Ed25519SignatureFinalization;
-            return this;
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(bytes, Memory);
+        const ret = wasm.ed25519signature_new(bytes.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        this.__wbg_ptr = ret[0] >>> 0;
+        Ed25519SignatureFinalization;
+        return this;
     }
     /**
-    * @param {Memory} bytes
-    * @returns {Ed25519Signature}
-    */
+     * @param {Memory} bytes
+     * @returns {Ed25519Signature}
+     */
     static from_bytes(bytes) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(bytes, Memory);
-            wasm.ed25519signature_from_bytes(retptr, bytes.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return Ed25519Signature.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(bytes, Memory);
+        const ret = wasm.ed25519signature_from_bytes(bytes.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return Ed25519Signature.__wrap(ret[0]);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_bytes() {
         const ret = wasm.ed25519signature_to_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     r_bytes() {
         const ret = wasm.ed25519signature_r_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     s_bytes() {
         const ret = wasm.ed25519signature_s_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
@@ -670,8 +562,7 @@ export class Ed25519Signature {
 const Ed25519SigningKeyFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_ed25519signingkey_free(ptr >>> 0, 1));
-/**
-*/
+
 export class Ed25519SigningKey {
 
     static __wrap(ptr) {
@@ -693,8 +584,6 @@ export class Ed25519SigningKey {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_ed25519signingkey_free(ptr, 0);
     }
-    /**
-    */
     constructor() {
         const ret = wasm.ed25519signingkey_new();
         this.__wbg_ptr = ret >>> 0;
@@ -702,87 +591,71 @@ export class Ed25519SigningKey {
         return this;
     }
     /**
-    * @returns {Ed25519SigningKey}
-    */
+     * @returns {Ed25519SigningKey}
+     */
     static random() {
         const ret = wasm.ed25519signingkey_new();
         return Ed25519SigningKey.__wrap(ret);
     }
     /**
-    * @param {Memory} bytes
-    * @returns {Ed25519SigningKey}
-    */
+     * @param {Memory} bytes
+     * @returns {Ed25519SigningKey}
+     */
     static from_bytes(bytes) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(bytes, Memory);
-            wasm.ed25519signingkey_from_bytes(retptr, bytes.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return Ed25519SigningKey.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(bytes, Memory);
+        const ret = wasm.ed25519signingkey_from_bytes(bytes.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return Ed25519SigningKey.__wrap(ret[0]);
     }
     /**
-    * @param {Memory} bytes
-    * @returns {Ed25519SigningKey}
-    */
+     * @param {Memory} bytes
+     * @returns {Ed25519SigningKey}
+     */
     static from_keypair_bytes(bytes) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(bytes, Memory);
-            wasm.ed25519signingkey_from_keypair_bytes(retptr, bytes.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return Ed25519SigningKey.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(bytes, Memory);
+        const ret = wasm.ed25519signingkey_from_keypair_bytes(bytes.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return Ed25519SigningKey.__wrap(ret[0]);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_bytes() {
         const ret = wasm.ed25519signingkey_to_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_keypair_bytes() {
         const ret = wasm.ed25519signingkey_to_keypair_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
     }
     /**
-    * @returns {Ed25519VerifyingKey}
-    */
+     * @returns {Ed25519VerifyingKey}
+     */
     verifying_key() {
         const ret = wasm.ed25519signingkey_verifying_key(this.__wbg_ptr);
         return Ed25519VerifyingKey.__wrap(ret);
     }
     /**
-    * @param {Memory} bytes
-    * @returns {Ed25519Signature}
-    */
+     * @param {Memory} bytes
+     * @returns {Ed25519Signature}
+     */
     sign(bytes) {
         _assertClass(bytes, Memory);
         const ret = wasm.ed25519signingkey_sign(this.__wbg_ptr, bytes.__wbg_ptr);
         return Ed25519Signature.__wrap(ret);
     }
     /**
-    * @param {Memory} bytes
-    * @param {Ed25519Signature} signature
-    * @returns {boolean}
-    */
+     * @param {Memory} bytes
+     * @param {Ed25519Signature} signature
+     * @returns {boolean}
+     */
     verify(bytes, signature) {
         _assertClass(bytes, Memory);
         _assertClass(signature, Ed25519Signature);
@@ -790,10 +663,10 @@ export class Ed25519SigningKey {
         return ret !== 0;
     }
     /**
-    * @param {Memory} bytes
-    * @param {Ed25519Signature} signature
-    * @returns {boolean}
-    */
+     * @param {Memory} bytes
+     * @param {Ed25519Signature} signature
+     * @returns {boolean}
+     */
     verify_strict(bytes, signature) {
         _assertClass(bytes, Memory);
         _assertClass(signature, Ed25519Signature);
@@ -805,8 +678,7 @@ export class Ed25519SigningKey {
 const Ed25519VerifyingKeyFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_ed25519verifyingkey_free(ptr >>> 0, 1));
-/**
-*/
+
 export class Ed25519VerifyingKey {
 
     static __wrap(ptr) {
@@ -829,65 +701,49 @@ export class Ed25519VerifyingKey {
         wasm.__wbg_ed25519verifyingkey_free(ptr, 0);
     }
     /**
-    * @param {Memory} bytes
-    */
+     * @param {Memory} bytes
+     */
     constructor(bytes) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(bytes, Memory);
-            wasm.ed25519verifyingkey_from_bytes(retptr, bytes.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            this.__wbg_ptr = r0 >>> 0;
-            Ed25519VerifyingKeyFinalization;
-            return this;
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(bytes, Memory);
+        const ret = wasm.ed25519verifyingkey_new(bytes.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        this.__wbg_ptr = ret[0] >>> 0;
+        Ed25519VerifyingKeyFinalization;
+        return this;
     }
     /**
-    * @param {Memory} bytes
-    * @returns {Ed25519VerifyingKey}
-    */
+     * @param {Memory} bytes
+     * @returns {Ed25519VerifyingKey}
+     */
     static from_bytes(bytes) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(bytes, Memory);
-            wasm.ed25519verifyingkey_from_bytes(retptr, bytes.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return Ed25519VerifyingKey.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(bytes, Memory);
+        const ret = wasm.ed25519verifyingkey_from_bytes(bytes.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return Ed25519VerifyingKey.__wrap(ret[0]);
     }
     /**
-    * @returns {boolean}
-    */
+     * @returns {boolean}
+     */
     is_weak() {
         const ret = wasm.ed25519verifyingkey_is_weak(this.__wbg_ptr);
         return ret !== 0;
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_bytes() {
         const ret = wasm.ed25519verifyingkey_to_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
     }
     /**
-    * @param {Memory} bytes
-    * @param {Ed25519Signature} signature
-    * @returns {boolean}
-    */
+     * @param {Memory} bytes
+     * @param {Ed25519Signature} signature
+     * @returns {boolean}
+     */
     verify(bytes, signature) {
         _assertClass(bytes, Memory);
         _assertClass(signature, Ed25519Signature);
@@ -895,10 +751,10 @@ export class Ed25519VerifyingKey {
         return ret !== 0;
     }
     /**
-    * @param {Memory} bytes
-    * @param {Ed25519Signature} signature
-    * @returns {boolean}
-    */
+     * @param {Memory} bytes
+     * @param {Ed25519Signature} signature
+     * @returns {boolean}
+     */
     verify_strict(bytes, signature) {
         _assertClass(bytes, Memory);
         _assertClass(signature, Ed25519Signature);
@@ -910,8 +766,7 @@ export class Ed25519VerifyingKey {
 const Keccak256HasherFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_keccak256hasher_free(ptr >>> 0, 1));
-/**
-*/
+
 export class Keccak256Hasher {
 
     static __wrap(ptr) {
@@ -933,8 +788,6 @@ export class Keccak256Hasher {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_keccak256hasher_free(ptr, 0);
     }
-    /**
-    */
     constructor() {
         const ret = wasm.keccak256hasher_new();
         this.__wbg_ptr = ret >>> 0;
@@ -942,22 +795,22 @@ export class Keccak256Hasher {
         return this;
     }
     /**
-    * @returns {Keccak256Hasher}
-    */
+     * @returns {Keccak256Hasher}
+     */
     clone() {
         const ret = wasm.keccak256hasher_clone(this.__wbg_ptr);
         return Keccak256Hasher.__wrap(ret);
     }
     /**
-    * @param {Memory} data
-    */
+     * @param {Memory} data
+     */
     update(data) {
         _assertClass(data, Memory);
         wasm.keccak256hasher_update(this.__wbg_ptr, data.__wbg_ptr);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     finalize() {
         const ret = wasm.keccak256hasher_finalize(this.__wbg_ptr);
         return Memory.__wrap(ret);
@@ -967,8 +820,7 @@ export class Keccak256Hasher {
 const MemoryFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_memory_free(ptr >>> 0, 1));
-/**
-*/
+
 export class Memory {
 
     static __wrap(ptr) {
@@ -1042,8 +894,7 @@ export class Memory {
 const NetworkMixinFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_networkmixin_free(ptr >>> 0, 1));
-/**
-*/
+
 export class NetworkMixin {
 
     __destroy_into_raw() {
@@ -1058,46 +909,62 @@ export class NetworkMixin {
         wasm.__wbg_networkmixin_free(ptr, 0);
     }
     /**
-    * @param {Memory} chain_memory
-    * @param {Memory} contract_memory
-    * @param {Memory} receiver_nonce
-    * @param {Memory} nonce_memory
-    */
-    constructor(chain_memory, contract_memory, receiver_nonce, nonce_memory) {
-        _assertClass(chain_memory, Memory);
-        _assertClass(contract_memory, Memory);
-        _assertClass(receiver_nonce, Memory);
+     * @param {Memory} version_memory
+     * @param {Memory} address_memory
+     * @param {Memory} nonce_memory
+     */
+    constructor(version_memory, address_memory, nonce_memory) {
+        _assertClass(version_memory, Memory);
+        _assertClass(address_memory, Memory);
         _assertClass(nonce_memory, Memory);
-        const ret = wasm.networkmixin_new(chain_memory.__wbg_ptr, contract_memory.__wbg_ptr, receiver_nonce.__wbg_ptr, nonce_memory.__wbg_ptr);
+        const ret = wasm.networkmixin_new(version_memory.__wbg_ptr, address_memory.__wbg_ptr, nonce_memory.__wbg_ptr);
         this.__wbg_ptr = ret >>> 0;
         NetworkMixinFinalization;
         return this;
     }
     /**
-    * @param {Memory} minimum_memory
-    * @returns {NetworkSecret}
-    */
+     * @param {Memory} minimum_memory
+     * @returns {NetworkSecret}
+     */
     generate(minimum_memory) {
         _assertClass(minimum_memory, Memory);
         const ret = wasm.networkmixin_generate(this.__wbg_ptr, minimum_memory.__wbg_ptr);
         return NetworkSecret.__wrap(ret);
     }
     /**
-    * @param {Memory} secret_memory
-    * @returns {Memory}
-    */
+     * @param {Memory} proof_memory
+     * @returns {Memory}
+     */
+    verify_proof(proof_memory) {
+        _assertClass(proof_memory, Memory);
+        const ret = wasm.networkmixin_verify_proof(this.__wbg_ptr, proof_memory.__wbg_ptr);
+        return Memory.__wrap(ret);
+    }
+    /**
+     * @param {Memory} secret_memory
+     * @returns {Memory}
+     */
     verify_secret(secret_memory) {
         _assertClass(secret_memory, Memory);
         const ret = wasm.networkmixin_verify_secret(this.__wbg_ptr, secret_memory.__wbg_ptr);
         return Memory.__wrap(ret);
     }
     /**
-    * @param {Memory} proof_memory
-    * @returns {Memory}
-    */
-    verify_proof(proof_memory) {
-        _assertClass(proof_memory, Memory);
-        const ret = wasm.networkmixin_verify_proof(this.__wbg_ptr, proof_memory.__wbg_ptr);
+     * @param {Memory} proofs_memory
+     * @returns {Memory}
+     */
+    verify_proofs(proofs_memory) {
+        _assertClass(proofs_memory, Memory);
+        const ret = wasm.networkmixin_verify_proofs(this.__wbg_ptr, proofs_memory.__wbg_ptr);
+        return Memory.__wrap(ret);
+    }
+    /**
+     * @param {Memory} secrets_memory
+     * @returns {Memory}
+     */
+    verify_secrets(secrets_memory) {
+        _assertClass(secrets_memory, Memory);
+        const ret = wasm.networkmixin_verify_secrets(this.__wbg_ptr, secrets_memory.__wbg_ptr);
         return Memory.__wrap(ret);
     }
 }
@@ -1105,8 +972,7 @@ export class NetworkMixin {
 const NetworkSecretFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_networksecret_free(ptr >>> 0, 1));
-/**
-*/
+
 export class NetworkSecret {
 
     static __wrap(ptr) {
@@ -1129,22 +995,22 @@ export class NetworkSecret {
         wasm.__wbg_networksecret_free(ptr, 0);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_secret() {
         const ret = wasm.networksecret_to_secret(this.__wbg_ptr);
         return Memory.__wrap(ret);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_proof() {
         const ret = wasm.networksecret_to_proof(this.__wbg_ptr);
         return Memory.__wrap(ret);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_value() {
         const ret = wasm.networksecret_to_value(this.__wbg_ptr);
         return Memory.__wrap(ret);
@@ -1154,8 +1020,7 @@ export class NetworkSecret {
 const Ripemd160HasherFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_ripemd160hasher_free(ptr >>> 0, 1));
-/**
-*/
+
 export class Ripemd160Hasher {
 
     static __wrap(ptr) {
@@ -1177,8 +1042,6 @@ export class Ripemd160Hasher {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_ripemd160hasher_free(ptr, 0);
     }
-    /**
-    */
     constructor() {
         const ret = wasm.ripemd160hasher_new();
         this.__wbg_ptr = ret >>> 0;
@@ -1186,22 +1049,22 @@ export class Ripemd160Hasher {
         return this;
     }
     /**
-    * @returns {Ripemd160Hasher}
-    */
+     * @returns {Ripemd160Hasher}
+     */
     clone() {
         const ret = wasm.ripemd160hasher_clone(this.__wbg_ptr);
         return Ripemd160Hasher.__wrap(ret);
     }
     /**
-    * @param {Memory} data
-    */
+     * @param {Memory} data
+     */
     update(data) {
         _assertClass(data, Memory);
         wasm.ripemd160hasher_update(this.__wbg_ptr, data.__wbg_ptr);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     finalize() {
         const ret = wasm.ripemd160hasher_finalize(this.__wbg_ptr);
         return Memory.__wrap(ret);
@@ -1211,8 +1074,7 @@ export class Ripemd160Hasher {
 const Secp256k1SignatureAndRecoveryFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_secp256k1signatureandrecovery_free(ptr >>> 0, 1));
-/**
-*/
+
 export class Secp256k1SignatureAndRecovery {
 
     static __wrap(ptr) {
@@ -1235,8 +1097,34 @@ export class Secp256k1SignatureAndRecovery {
         wasm.__wbg_secp256k1signatureandrecovery_free(ptr, 0);
     }
     /**
-    * @returns {Memory}
-    */
+     * @param {Memory} signature
+     * @param {number} recovery
+     */
+    constructor(signature, recovery) {
+        _assertClass(signature, Memory);
+        const ret = wasm.secp256k1signatureandrecovery_new(signature.__wbg_ptr, recovery);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        this.__wbg_ptr = ret[0] >>> 0;
+        Secp256k1SignatureAndRecoveryFinalization;
+        return this;
+    }
+    /**
+     * @param {Memory} input
+     * @returns {Secp256k1SignatureAndRecovery}
+     */
+    static from_bytes(input) {
+        _assertClass(input, Memory);
+        const ret = wasm.secp256k1signatureandrecovery_from_bytes(input.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
+        }
+        return Secp256k1SignatureAndRecovery.__wrap(ret[0]);
+    }
+    /**
+     * @returns {Memory}
+     */
     to_bytes() {
         const ret = wasm.secp256k1signatureandrecovery_to_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
@@ -1246,8 +1134,7 @@ export class Secp256k1SignatureAndRecovery {
 const Secp256k1SigningKeyFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_secp256k1signingkey_free(ptr >>> 0, 1));
-/**
-*/
+
 export class Secp256k1SigningKey {
 
     static __wrap(ptr) {
@@ -1269,8 +1156,6 @@ export class Secp256k1SigningKey {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_secp256k1signingkey_free(ptr, 0);
     }
-    /**
-    */
     constructor() {
         const ret = wasm.secp256k1signingkey_new();
         this.__wbg_ptr = ret >>> 0;
@@ -1278,73 +1163,56 @@ export class Secp256k1SigningKey {
         return this;
     }
     /**
-    * @returns {Secp256k1SigningKey}
-    */
+     * @returns {Secp256k1SigningKey}
+     */
     static random() {
         const ret = wasm.secp256k1signingkey_new();
         return Secp256k1SigningKey.__wrap(ret);
     }
     /**
-    * @param {Memory} input
-    * @returns {Secp256k1SigningKey}
-    */
+     * @param {Memory} input
+     * @returns {Secp256k1SigningKey}
+     */
     static from_bytes(input) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(input, Memory);
-            wasm.secp256k1signingkey_from_bytes(retptr, input.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return Secp256k1SigningKey.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(input, Memory);
+        const ret = wasm.secp256k1signingkey_from_bytes(input.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return Secp256k1SigningKey.__wrap(ret[0]);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_bytes() {
         const ret = wasm.secp256k1signingkey_to_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
     }
     /**
-    * @returns {Secp256k1VerifyingKey}
-    */
+     * @returns {Secp256k1VerifyingKey}
+     */
     verifying_key() {
         const ret = wasm.secp256k1signingkey_verifying_key(this.__wbg_ptr);
         return Secp256k1VerifyingKey.__wrap(ret);
     }
     /**
-    * @param {Memory} hashed
-    * @returns {Secp256k1SignatureAndRecovery}
-    */
+     * @param {Memory} hashed
+     * @returns {Secp256k1SignatureAndRecovery}
+     */
     sign_prehash_recoverable(hashed) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(hashed, Memory);
-            wasm.secp256k1signingkey_sign_prehash_recoverable(retptr, this.__wbg_ptr, hashed.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return Secp256k1SignatureAndRecovery.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(hashed, Memory);
+        const ret = wasm.secp256k1signingkey_sign_prehash_recoverable(this.__wbg_ptr, hashed.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return Secp256k1SignatureAndRecovery.__wrap(ret[0]);
     }
 }
 
 const Secp256k1VerifyingKeyFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_secp256k1verifyingkey_free(ptr >>> 0, 1));
-/**
-*/
+
 export class Secp256k1VerifyingKey {
 
     static __wrap(ptr) {
@@ -1367,57 +1235,41 @@ export class Secp256k1VerifyingKey {
         wasm.__wbg_secp256k1verifyingkey_free(ptr, 0);
     }
     /**
-    * @param {Memory} input
-    * @returns {Secp256k1VerifyingKey}
-    */
+     * @param {Memory} input
+     * @returns {Secp256k1VerifyingKey}
+     */
     static from_sec1_bytes(input) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(input, Memory);
-            wasm.secp256k1verifyingkey_from_sec1_bytes(retptr, input.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return Secp256k1VerifyingKey.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(input, Memory);
+        const ret = wasm.secp256k1verifyingkey_from_sec1_bytes(input.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return Secp256k1VerifyingKey.__wrap(ret[0]);
     }
     /**
-    * @param {Memory} hashed
-    * @param {Secp256k1SignatureAndRecovery} signature
-    * @returns {Secp256k1VerifyingKey}
-    */
+     * @param {Memory} hashed
+     * @param {Secp256k1SignatureAndRecovery} signature
+     * @returns {Secp256k1VerifyingKey}
+     */
     static recover_from_prehash(hashed, signature) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(hashed, Memory);
-            _assertClass(signature, Secp256k1SignatureAndRecovery);
-            wasm.secp256k1verifyingkey_recover_from_prehash(retptr, hashed.__wbg_ptr, signature.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return Secp256k1VerifyingKey.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(hashed, Memory);
+        _assertClass(signature, Secp256k1SignatureAndRecovery);
+        const ret = wasm.secp256k1verifyingkey_recover_from_prehash(hashed.__wbg_ptr, signature.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return Secp256k1VerifyingKey.__wrap(ret[0]);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_sec1_compressed_bytes() {
         const ret = wasm.secp256k1verifyingkey_to_sec1_compressed_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_sec1_uncompressed_bytes() {
         const ret = wasm.secp256k1verifyingkey_to_sec1_uncompressed_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
@@ -1427,8 +1279,7 @@ export class Secp256k1VerifyingKey {
 const Sha1HasherFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_sha1hasher_free(ptr >>> 0, 1));
-/**
-*/
+
 export class Sha1Hasher {
 
     static __wrap(ptr) {
@@ -1450,8 +1301,6 @@ export class Sha1Hasher {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_sha1hasher_free(ptr, 0);
     }
-    /**
-    */
     constructor() {
         const ret = wasm.sha1hasher_new();
         this.__wbg_ptr = ret >>> 0;
@@ -1459,22 +1308,22 @@ export class Sha1Hasher {
         return this;
     }
     /**
-    * @returns {Sha1Hasher}
-    */
+     * @returns {Sha1Hasher}
+     */
     clone() {
         const ret = wasm.sha1hasher_clone(this.__wbg_ptr);
         return Sha1Hasher.__wrap(ret);
     }
     /**
-    * @param {Memory} data
-    */
+     * @param {Memory} data
+     */
     update(data) {
         _assertClass(data, Memory);
         wasm.sha1hasher_update(this.__wbg_ptr, data.__wbg_ptr);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     finalize() {
         const ret = wasm.sha1hasher_finalize(this.__wbg_ptr);
         return Memory.__wrap(ret);
@@ -1484,8 +1333,7 @@ export class Sha1Hasher {
 const X25519PublicKeyFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_x25519publickey_free(ptr >>> 0, 1));
-/**
-*/
+
 export class X25519PublicKey {
 
     static __wrap(ptr) {
@@ -1508,49 +1356,33 @@ export class X25519PublicKey {
         wasm.__wbg_x25519publickey_free(ptr, 0);
     }
     /**
-    * @param {Memory} bytes
-    */
+     * @param {Memory} bytes
+     */
     constructor(bytes) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(bytes, Memory);
-            wasm.x25519publickey_from_bytes(retptr, bytes.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            this.__wbg_ptr = r0 >>> 0;
-            X25519PublicKeyFinalization;
-            return this;
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(bytes, Memory);
+        const ret = wasm.x25519publickey_new(bytes.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        this.__wbg_ptr = ret[0] >>> 0;
+        X25519PublicKeyFinalization;
+        return this;
     }
     /**
-    * @param {Memory} bytes
-    * @returns {X25519PublicKey}
-    */
+     * @param {Memory} bytes
+     * @returns {X25519PublicKey}
+     */
     static from_bytes(bytes) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(bytes, Memory);
-            wasm.x25519publickey_from_bytes(retptr, bytes.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return X25519PublicKey.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(bytes, Memory);
+        const ret = wasm.x25519publickey_from_bytes(bytes.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return X25519PublicKey.__wrap(ret[0]);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_bytes() {
         const ret = wasm.x25519publickey_to_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
@@ -1560,8 +1392,7 @@ export class X25519PublicKey {
 const X25519SharedSecretFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_x25519sharedsecret_free(ptr >>> 0, 1));
-/**
-*/
+
 export class X25519SharedSecret {
 
     static __wrap(ptr) {
@@ -1584,15 +1415,15 @@ export class X25519SharedSecret {
         wasm.__wbg_x25519sharedsecret_free(ptr, 0);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_bytes() {
         const ret = wasm.x25519sharedsecret_to_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
     }
     /**
-    * @returns {boolean}
-    */
+     * @returns {boolean}
+     */
     was_contributory() {
         const ret = wasm.x25519sharedsecret_was_contributory(this.__wbg_ptr);
         return ret !== 0;
@@ -1602,8 +1433,7 @@ export class X25519SharedSecret {
 const X25519StaticSecretFinalization = true
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_x25519staticsecret_free(ptr >>> 0, 1));
-/**
-*/
+
 export class X25519StaticSecret {
 
     static __wrap(ptr) {
@@ -1625,8 +1455,6 @@ export class X25519StaticSecret {
         const ptr = this.__destroy_into_raw();
         wasm.__wbg_x25519staticsecret_free(ptr, 0);
     }
-    /**
-    */
     constructor() {
         const ret = wasm.x25519staticsecret_random();
         this.__wbg_ptr = ret >>> 0;
@@ -1634,44 +1462,36 @@ export class X25519StaticSecret {
         return this;
     }
     /**
-    * @param {Memory} bytes
-    * @returns {X25519StaticSecret}
-    */
+     * @param {Memory} bytes
+     * @returns {X25519StaticSecret}
+     */
     static from_bytes(bytes) {
-        try {
-            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            _assertClass(bytes, Memory);
-            wasm.x25519staticsecret_from_bytes(retptr, bytes.__wbg_ptr);
-            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
-            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
-            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
-            if (r2) {
-                throw takeObject(r1);
-            }
-            return X25519StaticSecret.__wrap(r0);
-        } finally {
-            wasm.__wbindgen_add_to_stack_pointer(16);
+        _assertClass(bytes, Memory);
+        const ret = wasm.x25519staticsecret_from_bytes(bytes.__wbg_ptr);
+        if (ret[2]) {
+            throw takeFromExternrefTable0(ret[1]);
         }
+        return X25519StaticSecret.__wrap(ret[0]);
     }
     /**
-    * @returns {Memory}
-    */
+     * @returns {Memory}
+     */
     to_bytes() {
         const ret = wasm.x25519staticsecret_to_bytes(this.__wbg_ptr);
         return Memory.__wrap(ret);
     }
     /**
-    * @param {X25519PublicKey} other
-    * @returns {X25519SharedSecret}
-    */
+     * @param {X25519PublicKey} other
+     * @returns {X25519SharedSecret}
+     */
     diffie_hellman(other) {
         _assertClass(other, X25519PublicKey);
         const ret = wasm.x25519staticsecret_diffie_hellman(this.__wbg_ptr, other.__wbg_ptr);
         return X25519SharedSecret.__wrap(ret);
     }
     /**
-    * @returns {X25519PublicKey}
-    */
+     * @returns {X25519PublicKey}
+     */
     to_public() {
         const ret = wasm.x25519staticsecret_to_public(this.__wbg_ptr);
         return X25519PublicKey.__wrap(ret);
@@ -1686,7 +1506,7 @@ async function __wbg_load(module, imports) {
 
             } catch (e) {
                 if (module.headers.get('Content-Type') != 'application/wasm') {
-                    console.warn("`WebAssembly.instantiateStreaming` failed because your server does not serve wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\n", e);
+                    console.warn("`WebAssembly.instantiateStreaming` failed because your server does not serve Wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\n", e);
 
                 } else {
                     throw e;
@@ -1712,126 +1532,129 @@ async function __wbg_load(module, imports) {
 function __wbg_get_imports() {
     const imports = {};
     imports.wbg = {};
-    imports.wbg.__wbindgen_string_new = function(arg0, arg1) {
-        const ret = getStringFromWasm0(arg0, arg1);
-        return addHeapObject(ret);
+    imports.wbg.__wbg_buffer_aa30bbb65cb44323 = function(arg0) {
+        const ret = arg0.buffer;
+        return ret;
     };
-    imports.wbg.__wbindgen_object_drop_ref = function(arg0) {
-        takeObject(arg0);
+    imports.wbg.__wbg_call_41c7efaf6b1182f8 = function() { return handleError(function (arg0, arg1, arg2) {
+        const ret = arg0.call(arg1, arg2);
+        return ret;
+    }, arguments) };
+    imports.wbg.__wbg_call_c45d13337ffb12ac = function() { return handleError(function (arg0, arg1) {
+        const ret = arg0.call(arg1);
+        return ret;
+    }, arguments) };
+    imports.wbg.__wbg_crypto_574e78ad8b13b65f = function(arg0) {
+        const ret = arg0.crypto;
+        return ret;
     };
-    imports.wbg.__wbindgen_throw = function(arg0, arg1) {
-        throw new Error(getStringFromWasm0(arg0, arg1));
+    imports.wbg.__wbg_getRandomValues_b8f5dbd5f3995a9e = function() { return handleError(function (arg0, arg1) {
+        arg0.getRandomValues(arg1);
+    }, arguments) };
+    imports.wbg.__wbg_globalThis_856ff24a65e13540 = function() { return handleError(function () {
+        const ret = globalThis.globalThis;
+        return ret;
+    }, arguments) };
+    imports.wbg.__wbg_global_fc813a897a497d26 = function() { return handleError(function () {
+        const ret = global.global;
+        return ret;
+    }, arguments) };
+    imports.wbg.__wbg_msCrypto_a61aeb35a24c1329 = function(arg0) {
+        const ret = arg0.msCrypto;
+        return ret;
     };
-    imports.wbg.__wbindgen_memory = function() {
-        const ret = wasm.memory;
-        return addHeapObject(ret);
+    imports.wbg.__wbg_new_db41cf29086ce106 = function(arg0) {
+        const ret = new Uint8Array(arg0);
+        return ret;
     };
+    imports.wbg.__wbg_newnoargs_29f93ce2db72cd07 = function(arg0, arg1) {
+        const ret = new Function(getStringFromWasm0(arg0, arg1));
+        return ret;
+    };
+    imports.wbg.__wbg_newwithbyteoffsetandlength_c8ea72df7687880b = function(arg0, arg1, arg2) {
+        const ret = new Uint8Array(arg0, arg1 >>> 0, arg2 >>> 0);
+        return ret;
+    };
+    imports.wbg.__wbg_newwithlength_60b9d756f80003a6 = function(arg0) {
+        const ret = new Uint8Array(arg0 >>> 0);
+        return ret;
+    };
+    imports.wbg.__wbg_node_905d3e251edff8a2 = function(arg0) {
+        const ret = arg0.node;
+        return ret;
+    };
+    imports.wbg.__wbg_process_dc0fbacc7c1c06f7 = function(arg0) {
+        const ret = arg0.process;
+        return ret;
+    };
+    imports.wbg.__wbg_randomFillSync_ac0988aba3254290 = function() { return handleError(function (arg0, arg1) {
+        arg0.randomFillSync(arg1);
+    }, arguments) };
+    imports.wbg.__wbg_require_60cc747a6bc5215a = function() { return handleError(function () {
+        const ret = module.require;
+        return ret;
+    }, arguments) };
+    imports.wbg.__wbg_self_799f153b0b6e0183 = function() { return handleError(function () {
+        const ret = self.self;
+        return ret;
+    }, arguments) };
+    imports.wbg.__wbg_set_e97d203fd145cdae = function(arg0, arg1, arg2) {
+        arg0.set(arg1, arg2 >>> 0);
+    };
+    imports.wbg.__wbg_subarray_a984c21c3cf98bbb = function(arg0, arg1, arg2) {
+        const ret = arg0.subarray(arg1 >>> 0, arg2 >>> 0);
+        return ret;
+    };
+    imports.wbg.__wbg_versions_c01dfd4722a88165 = function(arg0) {
+        const ret = arg0.versions;
+        return ret;
+    };
+    imports.wbg.__wbg_window_cd65fa4478648b49 = function() { return handleError(function () {
+        const ret = window.window;
+        return ret;
+    }, arguments) };
     imports.wbg.__wbindgen_error_new = function(arg0, arg1) {
         const ret = new Error(getStringFromWasm0(arg0, arg1));
-        return addHeapObject(ret);
+        return ret;
+    };
+    imports.wbg.__wbindgen_init_externref_table = function() {
+        const table = wasm.__wbindgen_export_2;
+        const offset = table.grow(4);
+        table.set(0, undefined);
+        table.set(offset + 0, undefined);
+        table.set(offset + 1, null);
+        table.set(offset + 2, true);
+        table.set(offset + 3, false);
+        ;
+    };
+    imports.wbg.__wbindgen_is_function = function(arg0) {
+        const ret = typeof(arg0) === 'function';
+        return ret;
     };
     imports.wbg.__wbindgen_is_object = function(arg0) {
-        const val = getObject(arg0);
+        const val = arg0;
         const ret = typeof(val) === 'object' && val !== null;
         return ret;
     };
     imports.wbg.__wbindgen_is_string = function(arg0) {
-        const ret = typeof(getObject(arg0)) === 'string';
+        const ret = typeof(arg0) === 'string';
         return ret;
     };
-    imports.wbg.__wbindgen_is_function = function(arg0) {
-        const ret = typeof(getObject(arg0)) === 'function';
-        return ret;
-    };
-    imports.wbg.__wbg_buffer_b7b08af79b0b0974 = function(arg0) {
-        const ret = getObject(arg0).buffer;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_newnoargs_76313bd6ff35d0f2 = function(arg0, arg1) {
-        const ret = new Function(getStringFromWasm0(arg0, arg1));
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_self_3093d5d1f7bcb682 = function() { return handleError(function () {
-        const ret = self.self;
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_window_3bcfc4d31bc012f8 = function() { return handleError(function () {
-        const ret = window.window;
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_globalThis_86b222e13bdf32ed = function() { return handleError(function () {
-        const ret = globalThis.globalThis;
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_global_e5a3fe56f8be9485 = function() { return handleError(function () {
-        const ret = global.global;
-        return addHeapObject(ret);
-    }, arguments) };
     imports.wbg.__wbindgen_is_undefined = function(arg0) {
-        const ret = getObject(arg0) === undefined;
+        const ret = arg0 === undefined;
         return ret;
     };
-    imports.wbg.__wbg_call_1084a111329e68ce = function() { return handleError(function (arg0, arg1) {
-        const ret = getObject(arg0).call(getObject(arg1));
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_call_89af060b4e1523f2 = function() { return handleError(function (arg0, arg1, arg2) {
-        const ret = getObject(arg0).call(getObject(arg1), getObject(arg2));
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_newwithbyteoffsetandlength_8a2cb9ca96b27ec9 = function(arg0, arg1, arg2) {
-        const ret = new Uint8Array(getObject(arg0), arg1 >>> 0, arg2 >>> 0);
-        return addHeapObject(ret);
+    imports.wbg.__wbindgen_memory = function() {
+        const ret = wasm.memory;
+        return ret;
     };
-    imports.wbg.__wbg_new_ea1883e1e5e86686 = function(arg0) {
-        const ret = new Uint8Array(getObject(arg0));
-        return addHeapObject(ret);
+    imports.wbg.__wbindgen_string_new = function(arg0, arg1) {
+        const ret = getStringFromWasm0(arg0, arg1);
+        return ret;
     };
-    imports.wbg.__wbg_newwithlength_ec548f448387c968 = function(arg0) {
-        const ret = new Uint8Array(arg0 >>> 0);
-        return addHeapObject(ret);
+    imports.wbg.__wbindgen_throw = function(arg0, arg1) {
+        throw new Error(getStringFromWasm0(arg0, arg1));
     };
-    imports.wbg.__wbg_subarray_7c2e3576afe181d1 = function(arg0, arg1, arg2) {
-        const ret = getObject(arg0).subarray(arg1 >>> 0, arg2 >>> 0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_set_d1e79e2388520f18 = function(arg0, arg1, arg2) {
-        getObject(arg0).set(getObject(arg1), arg2 >>> 0);
-    };
-    imports.wbg.__wbindgen_object_clone_ref = function(arg0) {
-        const ret = getObject(arg0);
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_crypto_1d1f22824a6a080c = function(arg0) {
-        const ret = getObject(arg0).crypto;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_process_4a72847cc503995b = function(arg0) {
-        const ret = getObject(arg0).process;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_versions_f686565e586dd935 = function(arg0) {
-        const ret = getObject(arg0).versions;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_node_104a2ff8d6ea03a2 = function(arg0) {
-        const ret = getObject(arg0).node;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_require_cca90b1a94a0255b = function() { return handleError(function () {
-        const ret = module.require;
-        return addHeapObject(ret);
-    }, arguments) };
-    imports.wbg.__wbg_msCrypto_eb05e62b530a1508 = function(arg0) {
-        const ret = getObject(arg0).msCrypto;
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_randomFillSync_5c9c955aa56b6049 = function() { return handleError(function (arg0, arg1) {
-        getObject(arg0).randomFillSync(takeObject(arg1));
-    }, arguments) };
-    imports.wbg.__wbg_getRandomValues_3aa56aa6edec874c = function() { return handleError(function (arg0, arg1) {
-        getObject(arg0).getRandomValues(getObject(arg1));
-    }, arguments) };
 
     return imports;
 }
@@ -1843,11 +1666,10 @@ function __wbg_init_memory(imports, memory) {
 function __wbg_finalize_init(instance, module) {
     wasm = instance.exports;
     __wbg_init.__wbindgen_wasm_module = module;
-    cachedDataViewMemory0 = null;
     cachedUint8ArrayMemory0 = null;
 
 
-
+    wasm.__wbindgen_start();
     return wasm;
 }
 
@@ -1855,10 +1677,13 @@ function initSync(module) {
     if (wasm !== undefined) return wasm;
 
 
-    if (typeof module !== 'undefined' && Object.getPrototypeOf(module) === Object.prototype)
-    ({module} = module)
-    else
-    console.warn('using deprecated parameters for `initSync()`; pass a single object instead')
+    if (typeof module !== 'undefined') {
+        if (Object.getPrototypeOf(module) === Object.prototype) {
+            ({module} = module)
+        } else {
+            console.warn('using deprecated parameters for `initSync()`; pass a single object instead')
+        }
+    }
 
     const imports = __wbg_get_imports();
 
@@ -1877,10 +1702,13 @@ async function __wbg_init(module_or_path) {
     if (wasm !== undefined) return wasm;
 
 
-    if (typeof module_or_path !== 'undefined' && Object.getPrototypeOf(module_or_path) === Object.prototype)
-    ({module_or_path} = module_or_path)
-    else
-    console.warn('using deprecated parameters for the initialization function; pass a single object instead')
+    if (typeof module_or_path !== 'undefined') {
+        if (Object.getPrototypeOf(module_or_path) === Object.prototype) {
+            ({module_or_path} = module_or_path)
+        } else {
+            console.warn('using deprecated parameters for the initialization function; pass a single object instead')
+        }
+    }
 
     if (typeof module_or_path === 'undefined') {
         throw new Error();
