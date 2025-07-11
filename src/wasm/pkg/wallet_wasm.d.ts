@@ -164,19 +164,19 @@ export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembl
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly __wbg_x25519publickey_free: (a: number, b: number) => void;
-  readonly x25519publickey_from_bytes: (a: number) => [number, number, number];
-  readonly x25519publickey_to_bytes: (a: number) => number;
-  readonly x25519publickey_new: (a: number) => [number, number, number];
-  readonly __wbg_x25519sharedsecret_free: (a: number, b: number) => void;
-  readonly x25519sharedsecret_to_bytes: (a: number) => number;
-  readonly x25519sharedsecret_was_contributory: (a: number) => number;
   readonly __wbg_x25519staticsecret_free: (a: number, b: number) => void;
   readonly x25519staticsecret_random: () => number;
   readonly x25519staticsecret_from_bytes: (a: number) => [number, number, number];
   readonly x25519staticsecret_to_bytes: (a: number) => number;
   readonly x25519staticsecret_diffie_hellman: (a: number, b: number) => number;
   readonly x25519staticsecret_to_public: (a: number) => number;
+  readonly __wbg_x25519sharedsecret_free: (a: number, b: number) => void;
+  readonly x25519sharedsecret_to_bytes: (a: number) => number;
+  readonly x25519sharedsecret_was_contributory: (a: number) => number;
+  readonly __wbg_x25519publickey_free: (a: number, b: number) => void;
+  readonly x25519publickey_from_bytes: (a: number) => [number, number, number];
+  readonly x25519publickey_to_bytes: (a: number) => number;
+  readonly x25519publickey_new: (a: number) => [number, number, number];
   readonly sha1: (a: number) => number;
   readonly __wbg_sha1hasher_free: (a: number, b: number) => void;
   readonly sha1hasher_new: () => number;
@@ -246,14 +246,14 @@ export interface InitOutput {
   readonly ed25519signature_r_bytes: (a: number) => number;
   readonly ed25519signature_s_bytes: (a: number) => number;
   readonly ed25519signature_new: (a: number) => [number, number, number];
-  readonly __wbg_chacha20cipher_free: (a: number, b: number) => void;
-  readonly chacha20cipher_new: (a: number, b: number) => [number, number, number];
-  readonly chacha20cipher_seek: (a: number, b: number) => [number, number];
-  readonly chacha20cipher_apply_keystream: (a: number, b: number) => [number, number];
   readonly __wbg_chacha20poly1305cipher_free: (a: number, b: number) => void;
   readonly chacha20poly1305cipher_new: (a: number) => [number, number, number];
   readonly chacha20poly1305cipher_encrypt: (a: number, b: number, c: number) => [number, number, number];
   readonly chacha20poly1305cipher_decrypt: (a: number, b: number, c: number) => [number, number, number];
+  readonly __wbg_chacha20cipher_free: (a: number, b: number) => void;
+  readonly chacha20cipher_new: (a: number, b: number) => [number, number, number];
+  readonly chacha20cipher_seek: (a: number, b: number) => [number, number];
+  readonly chacha20cipher_apply_keystream: (a: number, b: number) => [number, number];
   readonly base64_encode_padded: (a: number) => [number, number];
   readonly base64_decode_padded: (a: number, b: number) => [number, number, number];
   readonly base64_encode_unpadded: (a: number) => [number, number];
