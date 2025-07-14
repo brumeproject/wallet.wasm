@@ -15,11 +15,7 @@ npm i @brumewallet/wallet.wasm
 
 ## Bundles
 - network.wasm
-- base16.wasm
 - base58.wasm
-- base64.wasm
-- ed25519.wasm
-- x25519.wasm
 - sha1.wasm
 - sha3.wasm
 - secp256k1.wasm
